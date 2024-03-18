@@ -13,14 +13,14 @@
  -->
 
 <!-- Intro  -->
-<h3 align="center">
+<h3>
         <samp>&gt; Hey There!, I am
                 <b><a target="_blank" href="#">Dian Prasetya</a></b>
         </samp>
 </h3>
 
 
-<p align="center"> 
+<p> 
   <samp>
     <br>
     「 I am a back end web application developer from <b>Indonesia</b> 」
@@ -29,7 +29,7 @@
   </samp>
 </p>
 
-<p align="center">
+<p>
  <a href="www.linkedin.com/in/dianprasetya" target="_blank">
   <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="dian"/>
  </a>
@@ -41,19 +41,12 @@
   </a> 
 </p>
 <br />
-
 <!-- About Section -->
  # About me
- 
 <p>
  <img align="right" width="350" src="/assets/programmer.gif" alt="Coding gif" />
-
  📧 &emsp; Reach me anytime: dianprasetya772@gmail.com<br/><br/>
-
 </p>
-
-<br/>
-<br/>
 <br/>
 
 ## Use To Code
