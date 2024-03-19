@@ -34,6 +34,7 @@ def get_data():
   return jsonify({"data": data})
 
 
+@app.route("/")
 @app.route("/home")
 def home():
   return render_template("home.html")
