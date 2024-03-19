@@ -13,6 +13,8 @@ data = []
 
 def post_data_thread(req_data):
   if req_data:  # Check if data exists to prevent unnecessary writes
+    with open("data.json", "r") as f:
+      data = json.load(f)
     data.append(req_data)
     with open("data.json", "w") as f:
       json.dump(data, f)
