@@ -1,0 +1,10 @@
+/* CSS untuk header dengan tema hijau muda */
+.navbar {
+  background-color: #e6ffe6;
+}
+.navbar-brand {
+  color: #28a745; /* Warna hijau muda */
+}
+.navbar-nav .nav-link {
+  color: #333; /* Warna teks lainnya */
+}

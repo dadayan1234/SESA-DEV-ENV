@@ -4,108 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Tautan untuk Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>IoT Dashboard</title>
 </head>
 <body>
-  <div class="container">
-      <h1 class="my-5">Real-time Line Charts with ApexCharts - IoT Dashboard</h1>
-      <div class="row">
-          <div class="col-12">
-              <div id="voltage-chart"></div>
-          </div>
-          <div class="col-12">
-              <div id="current-chart"></div>
-          </div>
-      </div>
-  </div>
-  <script>
-  var voltageChartOptions = {
-    chart: {
-      type: 'line',
-      height: 350,
-      animations: {
-        enabled: true,
-        easing: 'linear',
-        dynamicAnimation: {
-          speed: 2000
+
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container justify-content-between">
+        <a class="navbar-brand" href="#">SESA</a>
+        <div class="navbar-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Our Team</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="height: 20vh;">
+    <h1 class="my-5">Real-time Line Charts - IoT Dashboard</h1>
+    <div class="row">
+        <div class="col-5" style="height: 30vh;">
+            <div id="voltage-chart"></div>
+        </div>
+        <div class="col-5" style="height: 30vh;">
+            <div id="current-chart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Tautan untuk ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    var voltageChartOptions = {
+        chart: {
+            type: 'line',
+            height: 350
+        },
+        series: [{
+            name: 'Voltage',
+            data: []
+        }],
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                format: 'HH:mm:ss'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Voltage (V)'
+            }
+        },
+        title: {
+            text: 'Real-time Voltage Data',
+            align: 'center'
         }
-      }
-    },
-    series: [{
-      name: 'Voltage',
-      data: []
-    }],
-    xaxis: {
-      type: 'datetime'
-    },
-    yaxis: {
-      title: {
-        text: 'Voltage'
-      }
-    },
-    title: {
-      text: 'Real-time Voltage Data',
-      align: 'center'
-    }
-  };
+    };
 
-  var voltageChart = new ApexCharts(document.querySelector("#voltage-chart"), voltageChartOptions);
-  voltageChart.render();
-
-  var currentChartOptions = {
-    chart: {
-      type: 'line',
-      height: 350,
-      animations: {
-        enabled: true,
-        easing: 'linear',
-        dynamicAnimation: {
-          speed: 2000
+    var currentChartOptions = {
+        chart: {
+            type: 'line',
+            height: 350
+        },
+        series: [{
+            name: 'Current',
+            data: []
+        }],
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                format: 'HH:mm:ss'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Current (A)'
+            }
+        },
+        title: {
+            text: 'Real-time Current Data',
+            align: 'center'
         }
-      }
-    },
-    series: [{
-      name: 'Current',
-      data: []
-    }],
-    xaxis: {
-      type: 'datetime'
-    },
-    yaxis: {
-      title: {
-        text: 'Current'
-      }
-    },
-    title: {
-      text: 'Real-time Current Data',
-      align: 'center'
+    };
+
+    var voltageChart = new ApexCharts(document.querySelector("#voltage-chart"), voltageChartOptions);
+    var currentChart = new ApexCharts(document.querySelector("#current-chart"), currentChartOptions);
+
+    function fetchData() {
+        fetch('/get_data')
+            .then(response => response.json())
+            .then(data => {
+                var timestamp = new Date(data.timestamp).getTime();
+  
+                voltageChart.appendData([{
+                    x: timestamp,
+                    y: data.voltage
+                }]);
+  
+                currentChart.appendData([{
+                    x: timestamp,
+                    y: data.current
+                }]);
+  
+                // Perbarui tampilan grafik setelah menambahkan data baru
+                voltageChart.updateSeries([{ data: voltageChartOptions.series[0].data }]);
+                currentChart.updateSeries([{ data: currentChartOptions.series[0].data }]);
+            });
     }
-  };
 
-  var currentChart = new ApexCharts(document.querySelector("#current-chart"), currentChartOptions);
-  currentChart.render();
+    // Fetch data every 5 seconds
+    setInterval(fetchData, 5000);
 
-  function fetchData() {
-    fetch('/get_data')
-      .then(response => response.json())
-      .then(data => {
-        var timestamp = new Date(data.timestamp).getTime();
-        voltageChart.updateSeries([{
-          data: [[timestamp, data.voltage]]
-        }]);
-
-        currentChart.updateSeries([{
-          data: [[timestamp, data.current]]
-        }]);
-      });
-  }
-
-  // Fetch data every 5 seconds
-  setInterval(fetchData, 5000);
-  </script>
+    // Render charts
+    voltageChart.render();
+    currentChart.render();
+</script>
 </body>
 </html>
