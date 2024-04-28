@@ -5,6 +5,7 @@ from replit.database.database import ObservedList, ObservedDict
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from replit import db
+import pytz
 
 app = Flask(__name__)
 CORS(app)
@@ -12,9 +13,9 @@ CORS(app)
 @app.route("/post_data_2", methods=["POST"])
 def post_data_2():
     req_data = request.get_json()
-    timestamp = datetime.now().isoformat()
+    timestamp = datetime.now().astimezone(pytz.timezone('Asia/Jakarta')).isoformat()
     current = req_data.get("current")
-    volt = req_data.get("volt")
+    volt = req_data.get("voltage")
 
     if current is not None and volt is not None:
       if "sesa" not in db:
@@ -22,7 +23,7 @@ def post_data_2():
           tmp = db["sesa"]
       else:
           tmp = db["sesa"]
-      new_data = {"timestamp": timestamp, "current": current, "volt": volt}
+      new_data = {"timestamp": timestamp, "current": current, "voltage": volt}
       tmp.append(new_data)
       db["sesa"] = tmp  # Set the updated value back
           
@@ -34,10 +35,17 @@ def post_data_2():
 @app.route("/get_db_data", methods=["GET"])
 def get_db_data():
   data = []
+  temp = {}
   for val in list(db["sesa"].value):
     if type(val) in [ObservedDict]:
       data.append(val.value)
-  return jsonify(data)
+      temp = {"data" : data}
+      # Mengambil data terakhir dari data.json
+      latest_data = temp["data"][-1] if temp["data"] else {}
+  if latest_data:
+    return jsonify(latest_data)
+  else:
+    return jsonify({"success": False, "message": "No data available"})
 
 ######################## DATA HANDLING #########################
 @app.route("/save_data", methods=["POST"])

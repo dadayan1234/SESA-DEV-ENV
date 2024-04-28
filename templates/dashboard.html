@@ -119,7 +119,7 @@
   var currentChart = new Chart(currentCtx, currentConfig);
 
   function fetchData() {
-    fetch('/get_data')
+    fetch('/get_db_data')
       .then(response => response.json())
       .then(data => {
         voltageLabels.push(new Date(data.timestamp).toLocaleTimeString());
