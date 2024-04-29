@@ -2,10 +2,11 @@ import json
 from datetime import datetime
 from threading import Thread
 from replit.database.database import ObservedList, ObservedDict
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, url_for
 from flask_cors import CORS
 from replit import db
 import pytz
+import ML
 
 app = Flask(__name__)
 CORS(app)
@@ -35,8 +36,6 @@ def post_data_2():
       return jsonify({"success": True, "message": "Data saved successfully"})
     else:
         return jsonify({"success": False, "message": "Invalid data format"})
-
-
 
 @app.route("/get_db_data", methods=["GET"])
 def get_db_data():
@@ -74,7 +73,13 @@ def get_power():
     return jsonify(latest_data)
   else:
     return jsonify({"success": False, "message": "No data available"})
-    
+
+
+######################## ML DEPLOY ##########################
+predict = ML.data_frame(url_for("get_power"))
+predict_clean = ML.cleansing(predict)
+print(predict_clean)
+
 ######################## DATA HANDLING #########################
 @app.route("/save_data", methods=["POST"])
 def save_data():
@@ -164,7 +169,3 @@ def get_data_2():
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=80)  # Bind to all interfaces
-
-
-
-
