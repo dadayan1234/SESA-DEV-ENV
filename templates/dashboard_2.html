@@ -14,7 +14,7 @@
     <title>IoT Dashboard</title>
 </head>
 <body>
-  
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container justify-content-between">
           <a class="navbar-brand" href="#">SESA</a>
@@ -36,20 +36,36 @@
           </div>
       </div>
   </nav>
-  
-  <div class="container" style="height: 20vh;">
+  <!-- TITLE -->
+  <div class="container" style="height: 50vh;">
       <h1 class="my-5">Real-time Line Charts - IoT Dashboard</h1>
       <div class="row">
-          <div class="col-6" style="height: 40vh;">
+          <div class="col-6" style="height: 50vh;">
               <canvas id="voltage-chart"></canvas>
-          </div>
+            </div>
+        <div class="col-6" style="height: 50vh;">
+            <canvas id="current-chart"></canvas>
+        </div>
+        </div>
+  </div>
+  <br>
+  <!-- BARCAHRT BULANAN -->
+  <div class="container" style="height: 20vh;">
+      <h1 class="my-5">Penggunaan Energi Listrik Bulanan</h1>
+      <div class="row">
           <div class="col-6" style="height: 40vh;">
-              <canvas id="current-chart"></canvas>
+              <canvas id="single-bar-chart"></canvas>
           </div>
+        <div class="col-6" style="height: 40vh; border: 1px solid #ccc; background-color: #fff;">
+            <canvas id="single-bar-chart"></canvas>
+        </div>
       </div>
   </div>
+  <br>
+
 
   <script>
+  // VOLTAGE & CURRENT
   var voltageLabels = [];
   var voltageData = [];
 
@@ -117,7 +133,7 @@
   var currentChart = new Chart(currentCtx, currentConfig);
 
   function fetchData() {
-    fetch('/get_data')
+    fetch('/get_db_data')
       .then(response => response.json())
       .then(data => {
         voltageLabels.push(new Date(data.timestamp).toLocaleTimeString());
@@ -140,9 +156,40 @@
         currentChart.update();
       });
   }
+    // BAR CHAR
+    var singleBarChartData = [10, 20, 30, 40, 50];
 
+    const singleBarChartConfig = {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Monthly Expenses',
+                data: singleBarChartData,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    // Initialize the single bar chart instance
+    var singleBarChartCtx = document.getElementById('single-bar-chart').getContext('2d');
+    var singleBarChart = new Chart(singleBarChartCtx, singleBarChartConfig);
+
+    
   // Fetch data every 5 seconds
   setInterval(fetchData, 5000);
+    // Grafik Listrik
   </script>
 </body>
+<footer>
+
+</footer>
 </html>

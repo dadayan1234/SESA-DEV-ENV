@@ -10,6 +10,11 @@ import pytz
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/delete_sesa')
+def delete():
+  del db["sesa"]
+  return "Deleted"
+
 @app.route("/post_data_2", methods=["POST"])
 def post_data_2():
     req_data = request.get_json()
@@ -32,6 +37,7 @@ def post_data_2():
         return jsonify({"success": False, "message": "Invalid data format"})
 
 
+
 @app.route("/get_db_data", methods=["GET"])
 def get_db_data():
   data = []
@@ -47,6 +53,28 @@ def get_db_data():
   else:
     return jsonify({"success": False, "message": "No data available"})
 
+@app.route("/get_power", methods=["GET"])
+def get_power():
+  data = []
+  temp = {}
+  power = []
+  for val in list(db["sesa"].value):
+    if type(val) in [ObservedDict]:
+      data.append(val.value)
+      for i in range(len(data)):
+        power.append({
+            "timestamp": data[i]["timestamp"],
+            "power": data[i]["current"] * data[i]["voltage"]
+        })
+
+      temp = {"data" : power}
+      # Mengambil data terakhir dari data.json
+      latest_data = temp["data"][-1] if temp["data"] else {}
+  if latest_data:
+    return jsonify(latest_data)
+  else:
+    return jsonify({"success": False, "message": "No data available"})
+    
 ######################## DATA HANDLING #########################
 @app.route("/save_data", methods=["POST"])
 def save_data():
@@ -136,6 +164,7 @@ def get_data_2():
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=80)  # Bind to all interfaces
+
 
 
 
