@@ -6,7 +6,7 @@ from flask import Flask, jsonify, render_template, request, url_for
 from flask_cors import CORS
 from replit import db
 import pytz
-import ML
+# import ML
 
 app = Flask(__name__)
 CORS(app)
@@ -76,9 +76,9 @@ def get_power():
 
 
 ######################## ML DEPLOY ##########################
-predict = ML.data_frame(url_for("get_power"))
-predict_clean = ML.cleansing(predict)
-print(predict_clean)
+# predict = ML.data_frame(url_for("get_power"))
+# predict_clean = ML.cleansing(predict)
+# print(predict_clean)
 
 ######################## DATA HANDLING #########################
 @app.route("/save_data", methods=["POST"])
