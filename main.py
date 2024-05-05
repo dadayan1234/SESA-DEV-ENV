@@ -32,44 +32,36 @@ def post_data_2():
       new_data = {"timestamp": timestamp, "current": current, "voltage": volt}
       tmp.append(new_data)
       db["sesa"] = tmp  # Set the updated value back
+      print(db["sesa"])
           
       return jsonify({"success": True, "message": "Data saved successfully"})
     else:
         return jsonify({"success": False, "message": "Invalid data format"})
 
 @app.route("/get_db_data", methods=["GET"])
-def get_db_data():
-  data = []
-  temp = {}
-  for val in list(db["sesa"].value):
-    if type(val) in [ObservedDict]:
-      data.append(val.value)
-      temp = {"data" : data}
-      # Mengambil data terakhir dari data.json
-      latest_data = temp["data"][-1] if temp["data"] else {}
-  if latest_data:
-    return jsonify(latest_data)
+def get_db_data():  
+  data = dict(db["sesa"][-1]) if db["sesa"] else {}
+  if data:
+    return jsonify(data)
   else:
     return jsonify({"success": False, "message": "No data available"})
 
 @app.route("/get_power", methods=["GET"])
 def get_power():
-  data = []
-  temp = {}
-  power = []
-  for val in list(db["sesa"].value):
-    if type(val) in [ObservedDict]:
-      data.append(val.value)
-      for i in range(len(data)):
-        power.append({
-            "timestamp": data[i]["timestamp"],
-            "power": data[i]["current"] * data[i]["voltage"]
-        })
+  data = dict(db["sesa"][-1]) if db["sesa"] else {}
+  power = {"timestamp" : data["timestamp"], "power" : data["voltage"]*data["current"]}
+  # for val in list(db["sesa"].value):
+  #   if type(val) in [ObservedDict]:
+  #     data.append(val.value)
+  #     for i in range(len(data)):
+  #       power.append({
+  #           "timestamp": data[i]["timestamp"],
+  #           "power": data[i]["current"] * data[i]["voltage"]
+  #       })
 
-      temp = {"data" : power}
-      # Mengambil data terakhir dari data.json
-      latest_data = temp["data"][-1] if temp["data"] else {}
+  latest_data = power if power else {}
   if latest_data:
+    print(latest_data)
     return jsonify(latest_data)
   else:
     return jsonify({"success": False, "message": "No data available"})
@@ -80,39 +72,7 @@ def get_power():
 # predict_clean = ML.cleansing(predict)
 # print(predict_clean)
 
-######################## DATA HANDLING #########################
-@app.route("/save_data", methods=["POST"])
-def save_data():
-    req_data = request.get_json()
-    timestamp = req_data.get("timestamp")
-    current = req_data.get("current")
-    volt = req_data.get("volt")
-
-    if timestamp and current and volt:
-        db[timestamp] = {"current": current, "volt": volt}
-        return jsonify({"success": True, "message": "Data saved successfully"})
-    else:
-        return jsonify({"success": False, "message": "Invalid data format"})
-
-
-@app.route("/get_all_data", methods=["GET"])
-def get_all_data():
-    return jsonify(dict(db))
-
-@app.route("/get_data_by_timestamp", methods=["GET"])
-def get_data_by_timestamp():
-    timestamp = request.args.get("timestamp")
-    if not timestamp:
-        return jsonify({"success": False, "message": "Timestamp parameter is missing"})
-
-    data = db.get(timestamp)
-    if data:
-        return jsonify(data)
-    else:
-        return jsonify({"success": False, 
-        "message": "Data not found for the provided timestamp"})
-
-#################################################################
+######################## HTML ROUTE ##########################
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
