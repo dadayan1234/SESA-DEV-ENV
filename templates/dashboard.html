@@ -44,16 +44,19 @@
               <canvas id="voltage-chart"></canvas>
           </div>
           <div class="col-md-6">
-              <canvas id="current-chart"></canvas>
+              <canvas id="current-1-chart"></canvas>
+          </div>
+          <div class="col-md-6">
+              <canvas id="current-2-chart"></canvas>
           </div>
       </div>
       <div class="row">
           <div class="col-md-6">
-              <canvas id="power-chart"></canvas>
+              <canvas id="power-1-chart"></canvas>
           </div>
-          <!-- <div class="col-md-6">
-              <canvas id="current-chart"></canvas>
-          </div> -->
+          <div class="col-md-6">
+              <canvas id="power-2-chart"></canvas>
+          </div>
       </div>
   </div>
 
@@ -62,11 +65,17 @@
   var voltageLabels = [];
   var voltageData = [];
 
-  var currentLabels = [];
-  var currentData = [];
+  var current1Labels = [];
+  var current1Data = [];
+
+  var current2Labels = [];
+  var current2Data = [];
     
-  var powerLabels = [];
-  var powerData = [];
+  var power1Labels = [];
+  var power1Data = [];
+
+  var power2Labels = [];
+  var power2Data = [];
 
   const voltageConfig = {
     type: 'line',
@@ -95,13 +104,13 @@
     }
   };
 
-  const currentConfig = {
+  const current1Config = {
     type: 'line',
     data: {
-      labels: currentLabels,
+      labels: current1Labels,
       datasets: [{
-        label: 'Current',
-        data: currentData,
+        label: 'Current-1',
+        data: current1Data,
         fill: true,
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 2
@@ -116,19 +125,46 @@
       plugins: {
         title: {
           display: true,
-          text: 'Real-time Current Data'
+          text: 'Real-time Current 1 Data'
         }
       }
     }
   };
 
-  const powerConfig = {
+    const current2Config = {
+      type: 'line',
+      data: {
+        labels: current2Labels,
+        datasets: [{
+          label: 'Current-2',
+          data: current2Data,
+          fill: true,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Real-time Current 2 Data'
+          }
+        }
+      }
+    };
+
+  const power1Config = {
     type: 'line',
     data: {
-      labels: powerLabels,
+      labels: power1Labels,
       datasets: [{
-        label: 'Power',
-        data: powerData,
+        label: 'Power-1',
+        data: power1Data,
         fill: true,
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 2
@@ -143,32 +179,73 @@
       plugins: {
         title: {
           display: true,
-          text: 'Real-time Power Data'
+          text: 'Real-time Power 1 Data'
         }
       }
     }
   };
+
+    const power2Config = {
+      type: 'line',
+      data: {
+        labels: power2Labels,
+        datasets: [{
+          label: 'Power-2',
+          data: power2Data,
+          fill: true,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Real-time Power 2 Data'
+          }
+        }
+      }
+    };
   var voltageCtx = document.getElementById('voltage-chart').getContext('2d');
   var voltageChart = new Chart(voltageCtx, voltageConfig);
 
-  var currentCtx = document.getElementById('current-chart').getContext('2d');
-  var currentChart = new Chart(currentCtx, currentConfig);
+  var current1Ctx = document.getElementById('current-1-chart').getContext('2d');
+  var current1Chart = new Chart(current1Ctx, current1Config);
 
-  var powerCtx = document.getElementById('power-chart').getContext('2d');
-  var powerChart = new Chart(powerCtx, powerConfig);
+  var current2Ctx = document.getElementById('current-2-chart').getContext('2d');
+  var current2Chart = new Chart(current2Ctx, current2Config);
+
+  var power1Ctx = document.getElementById('power-1-chart').getContext('2d');
+  var power1Chart = new Chart(power1Ctx, power1Config);
+
+  var power2Ctx = document.getElementById('power-2-chart').getContext('2d');
+  var power2Chart = new Chart(power2Ctx, power2Config);
   function fetchData() {
     fetch('/get_power')
       .then(response => response.json())
       .then(data => {
-        powerLabels.push(new Date(data.timestamp).toLocaleTimeString());
-        powerData.push(data.power);
+        power1Labels.push(new Date(data.timestamp).toLocaleTimeString());
+        power1Data.push(data.power1);
 
-        if (powerLabels.length > 24) {
-          powerLabels.shift();
-          powerData.shift();
+        power2Labels.push(new Date(data.timestamp).toLocaleTimeString());
+        power2Data.push(data.power2);
+
+        if (power1Labels.length > 24) {
+          power1Labels.shift();
+          power1Data.shift();
+        }
+        if (power2Labels.length > 24) {
+          power2Labels.shift();
+          power2Data.shift();
         }
         
-        powerChart.update();
+        power1Chart.update();
+        power2Chart.update();
       });
     
     fetch('/get_db_data')
@@ -177,21 +254,30 @@
         voltageLabels.push(new Date(data.timestamp).toLocaleTimeString());
         voltageData.push(data.voltage);
 
-        currentLabels.push(new Date(data.timestamp).toLocaleTimeString());
-        currentData.push(data.current);
+        current1Labels.push(new Date(data.timestamp).toLocaleTimeString());
+        current1Data.push(data.current1);
+
+        current2Labels.push(new Date(data.timestamp).toLocaleTimeString());
+        current2Data.push(data.current2);
 
         if (voltageLabels.length > 24) {
           voltageLabels.shift();
           voltageData.shift();
         }
 
-        if (currentLabels.length > 24) {
-          currentLabels.shift();
-          currentData.shift();
+        if (current1Labels.length > 24) {
+          current1Labels.shift();
+          current1Data.shift();
         }
 
+        if (current2Labels.length > 24) {
+          current2Labels.shift();
+          current2Data.shift();
+        }
+        
         voltageChart.update();
-        currentChart.update();
+        current1Chart.update();
+        current2Chart.update();
       });
   }
 

@@ -20,19 +20,20 @@ def delete():
 def post_data_2():
     req_data = request.get_json()
     timestamp = datetime.now().astimezone(pytz.timezone('Asia/Jakarta')).isoformat()
-    current = req_data.get("current")
+    current1 = req_data.get("current1")
+    current2 = req_data.get("current2")
     volt = req_data.get("voltage")
 
-    if current is not None and volt is not None:
+    if current1 is not None and volt is not None:
       if "sesa" not in db:
           db["sesa"] = []
           tmp = db["sesa"]
       else:
           tmp = db["sesa"]
-      new_data = {"timestamp": timestamp, "current": current, "voltage": volt}
+      new_data = {"timestamp": timestamp, "current1": current1, "current2": current2, 
+                  "voltage": volt}
       tmp.append(new_data)
       db["sesa"] = tmp  # Set the updated value back
-      print(db["sesa"])
           
       return jsonify({"success": True, "message": "Data saved successfully"})
     else:
@@ -49,7 +50,7 @@ def get_db_data():
 @app.route("/get_power", methods=["GET"])
 def get_power():
   data = dict(db["sesa"][-1]) if db["sesa"] else {}
-  power = {"timestamp" : data["timestamp"], "power" : data["voltage"]*data["current"]}
+  power = {"timestamp" : data["timestamp"], "power1" : data["voltage"]*data["current1"], "power2" : data["voltage"]*data["current2"]}
   # for val in list(db["sesa"].value):
   #   if type(val) in [ObservedDict]:
   #     data.append(val.value)
